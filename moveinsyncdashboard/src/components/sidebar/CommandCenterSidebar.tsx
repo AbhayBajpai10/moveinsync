@@ -169,7 +169,7 @@
 // ============================================================
 // components/sidebar/CommandCenterSidebar.tsx
 // ============================================================
-'use client';
+// 'use client';
 
 // import { useState, useRef, useCallback } from 'react';
 // import { useDashboardStore } from '../../store/useStore';
@@ -428,6 +428,7 @@
 //   );
 // }
 
+'use client';
 
 import { useState, useRef, useCallback } from 'react';
 import { useDashboardStore } from '../../store/useStore';
@@ -448,8 +449,10 @@ const STATUS_LABELS: Record<FilterOption, string> = {
 
 export default function CommandCenterSidebar() {
   const { vehicles, setSelectedTripId } = useDashboardStore();
+
   const [statusFilter, setStatusFilter] = useState<FilterOption>('all');
   const [isOpen, setIsOpen] = useState(false);
+
   const parentRef = useRef<HTMLDivElement>(null);
 
   const vehicleArray = Object.values(vehicles);
@@ -464,16 +467,16 @@ export default function CommandCenterSidebar() {
     v => v.etaNextStop < 5 && v.status !== 'idle'
   ).length;
 
-  // ── Filter ──────────────────────────────────────────────
+  // ── Filtered vehicles ───────────────────────────────────
   const filteredVehicles = vehicleArray.filter(
     v => statusFilter === 'all' || v.status === statusFilter
   );
 
-  // ── Virtualizer ─────────────────────────────────────────
+  // ── Virtualizer (FIXED) ─────────────────────────────────
   const rowVirtualizer = useVirtualizer({
     count: filteredVehicles.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 104,
+    estimateSize: () => 110, // card height + margin
     overscan: 5,
   });
 
@@ -487,7 +490,7 @@ export default function CommandCenterSidebar() {
 
   return (
     <>
-      {/* Toggle Button */}
+      {/* Toggle button */}
       <button
         onClick={() => setIsOpen(true)}
         className="absolute top-4 right-4 z-20 bg-slate-900 text-white p-3 rounded-lg shadow-xl border border-slate-700 hover:bg-slate-800 transition-all flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -522,8 +525,8 @@ export default function CommandCenterSidebar() {
           <button onClick={() => setIsOpen(false)}>✕</button>
         </div>
 
+        {/* Stats + Filter */}
         <div className="p-6 space-y-6">
-          {/* Stats */}
           <div className="grid grid-cols-2 gap-3">
             <StatCard icon={<Car className="text-green-500" />} value={activeTrips} label="Active Trips" />
             <StatCard icon={<AlertTriangle className="text-red-500" />} value={delayedTrips} label="Delayed Trips" />
@@ -531,7 +534,6 @@ export default function CommandCenterSidebar() {
             <StatCard icon={<MapPin className="text-orange-500" />} value={approachingPickup} label="Approaching" />
           </div>
 
-          {/* Filter */}
           <div>
             <label className="text-sm font-semibold text-slate-300">
               Filter by Status
@@ -552,14 +554,24 @@ export default function CommandCenterSidebar() {
           </h3>
         </div>
 
-        {/* Vehicle List */}
-        <div ref={parentRef} className="flex-1 overflow-auto px-6 pb-6">
+        {/* ✅ SCROLL CONTAINER (CRITICAL FIX) */}
+        <div
+          ref={parentRef}
+          className="px-6 pb-6 overflow-auto"
+          style={{ height: 'calc(100vh - 360px)' }}
+        >
           {filteredVehicles.length === 0 ? (
             <div className="text-center text-slate-500 py-8">
               No trips match this filter.
             </div>
           ) : (
-            <div style={{ height: rowVirtualizer.getTotalSize(), position: 'relative' }}>
+            <div
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                position: 'relative',
+                width: '100%',
+              }}
+            >
               {rowVirtualizer.getVirtualItems().map(row => {
                 const v = filteredVehicles[row.index];
                 const id = v.tripId || v.id;
@@ -588,9 +600,12 @@ export default function CommandCenterSidebar() {
                           <p className="text-xs text-slate-400">ID: {id}</p>
                         </div>
                         <span className={`text-xs px-2 py-1 rounded-full
-                          ${v.status === 'delayed' ? 'bg-red-900/50 text-red-400'
-                            : v.status === 'in-progress' ? 'bg-green-900/50 text-green-400'
-                            : 'bg-slate-800 text-slate-300'}`}>
+                          ${v.status === 'delayed'
+                            ? 'bg-red-900/50 text-red-400'
+                            : v.status === 'in-progress'
+                            ? 'bg-green-900/50 text-green-400'
+                            : 'bg-slate-800 text-slate-300'}`}
+                        >
                           {v.status.toUpperCase()}
                         </span>
                       </div>
@@ -611,9 +626,18 @@ export default function CommandCenterSidebar() {
   );
 }
 
-function StatCard({ icon, value, label }: any) {
+// ── Stat Card ──────────────────────────────────────────────
+function StatCard({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: number;
+  label: string;
+}) {
   return (
-    <div className="bg-slate-900 p-4 rounded-lg border border-slate-800 flex flex-col items-center">
+    <div className="bg-slate-900 p-4 rounded-lg border border-slate-800 flex flex-col items-center text-center">
       {icon}
       <span className="text-2xl font-bold mt-2">{value}</span>
       <span className="text-xs text-slate-400 mt-1">{label}</span>
