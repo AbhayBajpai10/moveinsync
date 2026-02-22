@@ -2,7 +2,9 @@ import { WebSocketServer, WebSocket } from "ws";
 import http from "http";
 import express from "express";
 const app = express();
-
+app.get("/", (_, res) => {
+  res.send("Mock WS server is running");
+});
 // health check (Render cold-start fix)
 app.get("/health", (_, res) => res.send("ok"));
 
