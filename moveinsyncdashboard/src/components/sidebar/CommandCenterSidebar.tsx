@@ -599,7 +599,7 @@ export default function CommandCenterSidebar() {
                           <h4 className="font-bold">{v.driverName}</h4>
                           <p className="text-xs text-slate-400">ID: {id}</p>
                         </div>
-                        <span className={`text-xs px-2 py-1 rounded-full
+                        <span className={`text-xs px-2 py-2 rounded-full
                           ${v.status === 'delayed'
                             ? 'bg-red-900/50 text-red-400'
                             : v.status === 'in-progress'
