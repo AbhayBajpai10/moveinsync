@@ -1,6 +1,16 @@
 import { WebSocketServer, WebSocket } from "ws";
+import http from "http";
+import express from "express";
+const app = express();
 
-const wss = new WebSocketServer({ port: 8080 });
+// health check (Render cold-start fix)
+app.get("/health", (_, res) => res.send("ok"));
+
+const server = http.createServer(app);
+const wss = new WebSocketServer({
+  server,
+  path: "/ws",   // 👈 THIS IS THE KEY FIX
+});
 
 // 1. Initialize Mock Fleet Data
 const vehicles = Array.from({ length: 10 }).map((_, i) => ({
@@ -121,6 +131,11 @@ const shutdown = () => {
     });
 };
 
+const PORT = process.env.PORT || 8080;
+
+server.listen(PORT, () => {
+  console.log(`🚀 Mock WS server running on port ${PORT}`);
+});
 // // Listen for process termination signals (Ctrl+C or Docker stop)
 // process.on('SIGINT', shutdown);
 // process.on('SIGTERM', shutdown);
