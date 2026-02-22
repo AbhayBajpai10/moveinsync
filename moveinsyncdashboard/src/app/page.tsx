@@ -177,7 +177,7 @@ export default function DashboardPage() {
       <Toaster
         position="top-center"
         theme="dark"
-        toastOptions={{ style: { maxWidth: '90vw' } }}
+        toastOptions={{ style: { maxWidth: '90vw' , marginTop: '72px'} }}
       />
 
       {/* ── Map — absolute fill so Next.js dynamic() wrapper doesn't collapse height ── */}
