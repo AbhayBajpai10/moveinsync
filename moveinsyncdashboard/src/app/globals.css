@@ -1,0 +1,40 @@
+/* globals.css — @import statements MUST come before all other rules */
+@import 'mapbox-gl/dist/mapbox-gl.css';
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Required for full-height map — without this the h-full chain collapses to 0 */
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Mapbox popup styling */
+.mapboxgl-popup-content {
+  padding: 0 !important;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mapboxgl-ctrl-bottom-left {
+  z-index: 5 !important;
+}
+
+/* Prevent mapbox logo overlapping UI */
+.mapboxgl-ctrl-bottom-right {
+  z-index: 5 !important;
+}
