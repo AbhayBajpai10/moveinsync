@@ -179,7 +179,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
+} from '../ui/sheet';
 import { Car, AlertTriangle, Building, MapPin, Menu } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { TripStatus } from '../../types/types';
